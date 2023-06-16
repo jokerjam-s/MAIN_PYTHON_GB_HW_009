@@ -1,12 +1,14 @@
 # Нахождение корней квадратного уравнения <br>
 # Генерация csv файла с тремя случайными числами в каждой строке. 100-1000 строк.<br>
 
-__all__ = ['find_root', 'random_csv']
+__all__ = ['find_root', 'random_csv', 'MIN_NUMBER_ON_ROW']
 
 import random as rnd
 import csv
+from typing import Callable
 
 MIN_NUMBER_ON_ROW = 3  # кол-во чисел в строке (минимум)
+CSV_FILE = "numbers.csv"
 
 # ограничение строк в csv-файла
 _MIN_COUNT_ROW = 100
@@ -17,7 +19,21 @@ _MIN_NUMBER = 0
 _MAX_NUMBER = 100
 
 
-def find_root(a: int, b: int, c: int) -> (int, int | None, None):
+def find_root_deco(func: Callable):
+    """Декоратор, запускающий функцию нахождения корней квадратного уравнения с каждой тройкой чисел из csv файла."""
+
+    def wrapper():
+        roots = []
+        with open(CSV_FILE, "r", encoding="UTF-8") as file:
+            csv_reader = csv.reader(file, dialect="excel", quoting=csv.QUOTE_NONNUMERIC)
+            for row in csv_reader:
+                roots.append(func(row[0], row[1], row[2]))
+        print(roots)
+    return wrapper
+
+
+@find_root_deco
+def find_root(a: int, b: int, c: int) -> (float, float):
     """Поиск корней квадратного уравнения"""
     x1 = x2 = None
     d = b * b - 4 * a * c
@@ -47,8 +63,11 @@ def random_csv(file_name: str, /, count_row: int = _MIN_COUNT_ROW, count_number:
 
 
 if __name__ == '__main__':
-    print(find_root(2, 3, 3))
-    print(find_root(2, 7, 3))
-    print(find_root(4, 7, 3))
+    # print(find_root(2, 3, 3))
+    # print(find_root(2, 7, 3))
+    # print(find_root(4, 7, 3))
 
-    random_csv("numbers.csv")
+    # random_csv("numbers.csv")
+    # fun = find_root
+    # fun()
+    pass
