@@ -1,8 +1,6 @@
 # Нахождение корней квадратного уравнения <br>
 # Генерация csv файла с тремя случайными числами в каждой строке. 100-1000 строк.<br>
 
-__all__ = ['find_root', 'random_csv', 'MIN_NUMBER_ON_ROW']
-
 import random as rnd
 import csv
 from typing import Callable
@@ -29,6 +27,7 @@ def find_root_deco(func: Callable):
             for row in csv_reader:
                 roots.append(func(row[0], row[1], row[2]))
         print(roots)
+
     return wrapper
 
 
@@ -63,11 +62,6 @@ def random_csv(file_name: str, /, count_row: int = _MIN_COUNT_ROW, count_number:
 
 
 if __name__ == '__main__':
-    # print(find_root(2, 3, 3))
-    # print(find_root(2, 7, 3))
-    # print(find_root(4, 7, 3))
-
-    # random_csv("numbers.csv")
-    # fun = find_root
-    # fun()
-    pass
+    random_csv(CSV_FILE)
+    fun = find_root
+    fun()
