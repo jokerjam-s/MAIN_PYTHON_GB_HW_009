@@ -1,12 +1,14 @@
-# Нахождение корней квадратного уравнения <br>
-# Генерация csv файла с тремя случайными числами в каждой строке. 100-1000 строк.<br>
+# Нахождение корней квадратного уравнения
+# Генерация csv файла с тремя случайными числами в каждой строке. 100-1000 строк.
+# Декораторы
 
 import random as rnd
 import csv
-from typing import Callable
+from typing import Callable, Tuple
 
 MIN_NUMBER_ON_ROW = 3  # кол-во чисел в строке (минимум)
 CSV_FILE = "numbers.csv"
+JSON_FILE = "result.json"
 
 # ограничение строк в csv-файла
 _MIN_COUNT_ROW = 100
@@ -17,22 +19,42 @@ _MIN_NUMBER = 0
 _MAX_NUMBER = 100
 
 
-def find_root_deco(func: Callable):
-    """Декоратор, запускающий функцию нахождения корней квадратного уравнения с каждой тройкой чисел из csv файла."""
+def result_to_json(func: Callable):
+    """Декоратор, сохраняющий переданные параметры и результаты работы функции в json файл."""
 
-    def wrapper():
-        roots = []
-        with open(CSV_FILE, "r", encoding="UTF-8") as file:
-            csv_reader = csv.reader(file, dialect="excel", quoting=csv.QUOTE_NONNUMERIC)
-            for row in csv_reader:
-                roots.append(func(row[0], row[1], row[2]))
-        print(roots)
+    import json
+    def wrapper(*args, **kwargs):
+        # Двойной список solves для решения Python TypeError: ‘float’ object is not subscriptable.
+        # https://blog.finxter.com/solved-python-typeerror-float-object-is-not-subscriptable/
+        solves = [func(*args, **kwargs)]
+        json_res = []
+        for solve in solves[0]:
+            json_res.append(dict(a=solve[0], b=solve[1], c=solve[2], x1=solve[3], x2=solve[4]))
+        with open(JSON_FILE, "w", encoding='UTF-8') as file:
+            json.dump(json_res, file, indent=2)
+        return solves
 
     return wrapper
 
 
+def find_root_deco(func: Callable):
+    """Декоратор, запускающий функцию нахождения корней квадратного уравнения с каждой тройкой чисел из csv файла."""
+
+    def wrapper(*args, **kwargs):
+        roots = []
+        with open(CSV_FILE, "r", encoding="UTF-8") as file:
+            csv_reader = csv.reader(file, dialect="excel", quoting=csv.QUOTE_NONNUMERIC)
+            for row in csv_reader:
+                x1, x2 = func(row[0], row[1], row[2])
+                roots.append([row[0], row[1], row[2], x1, x2])
+        return roots
+
+    return wrapper
+
+
+@result_to_json
 @find_root_deco
-def find_root(a: int, b: int, c: int) -> (float, float):
+def find_root(a: int, b: int, c: int):
     """Поиск корней квадратного уравнения"""
     x1 = x2 = None
     d = b * b - 4 * a * c
@@ -63,5 +85,5 @@ def random_csv(file_name: str, /, count_row: int = _MIN_COUNT_ROW, count_number:
 
 if __name__ == '__main__':
     random_csv(CSV_FILE)
-    fun = find_root
-    fun()
+    fun = find_root()
+    print(fun)
