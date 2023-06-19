@@ -27,9 +27,7 @@ def result_to_json(func: Callable):
         # Двойной список solves для решения Python TypeError: ‘float’ object is not subscriptable.
         # https://blog.finxter.com/solved-python-typeerror-float-object-is-not-subscriptable/
         solves = [func(*args, **kwargs)]
-        json_res = []
-        for solve in solves[0]:
-            json_res.append(dict(a=solve[0], b=solve[1], c=solve[2], x1=solve[3], x2=solve[4]))
+        json_res = [dict(a=s[0], b=s[1], c=s[2], x1=s[3], x2=s[4]) for s in solves[0]]
         with open(JSON_FILE, "w", encoding='UTF-8') as file:
             json.dump(json_res, file, indent=2)
         return solves
