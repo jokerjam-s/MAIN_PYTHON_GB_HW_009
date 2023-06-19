@@ -14,7 +14,7 @@
 
 Вывод списка решения:
 
-![img.png](lib/img_1-02.png)
+![img.png](img/img_1-02.png)
 
 Сгенерированный json:
 
